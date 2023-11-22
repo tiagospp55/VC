@@ -1,22 +1,37 @@
+import argparse
 import cv2
 import numpy as np
 
+def main():
+  
 
-image = cv2.imread("wdg2.bmp", cv2.IMREAD_GRAYSCALE)
+    image = cv2.imread('wdg2.bmp', cv2.IMREAD_GRAYSCALE) # Load an image 
 
-retval, image_threshold = cv2.threshold(image, 120, 255, cv2.THRESH_BINARY)
+    #converting to binary with threshold of 120
+    retval, img_thresholded = cv2.threshold(image, 120, 255, cv2.THRESH_BINARY)
 
-image_inverted = cv2.bitwise_not(image_threshold[1])
+    #inverting image
+    image = cv2.bitwise_not(img_thresholded)
 
-retangular_structure = np.ones((3,3), np.uint8)
+    #square structuring point structuring point
+    square_struct_point_3x3 = np.ones((3,3), np.uint8)
+    square_struct_point_7x7 = np.ones((7,7), np.uint8)
 
-image_dilatation = cv2.dilate(image_inverted, retangular_structure, iterations= 1)
-image_subtracted = cv2.subtract(image_dilatation, image_inverted)
 
-cv2.imshow("original", image)
-cv2.imshow("dilatation", image_dilatation)
-cv2.imshow("subtracted", image_subtracted)
+    square_img_dilation_3x3 = cv2.dilate(image, square_struct_point_3x3, iterations=1)
+    square_img_dilation_7x7 = cv2.dilate(image, square_struct_point_7x7, iterations=1)
 
-#Aumentar o elemento estruturante faz com que os contornos se realcem 
+    edges_3x3=cv2.subtract(square_img_dilation_3x3, image)
+    edges_7x7=cv2.subtract(square_img_dilation_7x7, image)
+    
 
-cv2.waitKey(0)
+
+    cv2.imshow('original', image)
+    cv2.imshow('edges 3x3', edges_3x3)
+    cv2.imshow('edges 7x7', edges_7x7)
+
+
+    cv2.waitKey(0)
+
+if __name__ == "__main__":
+    main()
